@@ -32,10 +32,17 @@
         <button type="button" id="halifax">Halifax</button>
         <button type="button" id="clear">Clear location</button>
         <button type="button" id="export" disabled>Export filtered CSV</button>
+        <button type="button" id="build-report" disabled>Build location report</button>
       </div>
     </fieldset>
     <p id="status" role="status">Loading Canadian broadband data…</p>
   </form>
+  <section id="location-report" class="panel location-report" aria-labelledby="report-title" hidden>
+    <div class="heading"><h2 id="report-title" tabindex="-1">Location evidence report</h2><button id="print-report" type="button" disabled>Print or save PDF</button></div>
+    <p class="report-location"></p>
+    <p class="report-status small" role="status"></p>
+    <div class="report-content"></div>
+  </section>
   <div class="workspace">
     <section class="panel map-panel" aria-labelledby="map-title">
       <div class="heading"><h2 id="map-title">Coverage map</h2><label class="switch"><input id="tiles" type="checkbox" checked> Background map</label></div>

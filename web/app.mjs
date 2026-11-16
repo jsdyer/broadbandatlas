@@ -1,4 +1,5 @@
 import { BANDS, COLORS, coordinates, csvField, filterRows, funds, technologies } from './model.mjs';
+import { locationReport } from './report.mjs';
 
 const byId = id => document.getElementById(id);
 const number = new Intl.NumberFormat('en-CA');
@@ -12,7 +13,9 @@ const regionView = {
 const perPage = 20;
 const maxPoints = 1800;
 const datasets = new Map();
+const report = locationReport(byId('location-report'), byId('print-report'));
 let manifest, places = [], selected, activeRegion, matches = [], page = 0, requestId = 0;
+let reportPoint, reportRows;
 let map, tiles, markers, focusLayer, area, redrawToken;
 
 const fold = value => value.normalize('NFKD').replace(/\p{M}/gu, '').toLocaleLowerCase('en-CA').trim();
@@ -122,7 +125,7 @@ function selection() {
   };
 }
 
-function remember() {
+function remember(open = false, grid = '') {
   const params = new URLSearchParams({ region: activeRegion });
   if (selected) {
     params.set('q', selected.label);
@@ -133,13 +136,37 @@ function remember() {
     }
   }
   for (const id of ['coverage', 'tech', 'fund']) if (byId(id).value) params.set(id, byId(id).value);
+  if (open) {
+    params.set('report', '1');
+    if (grid) params.set('reportGrid', grid);
+    if (!selected) params.set('radius', byId('radius').value);
+  }
   history.replaceState(null, '', '#' + params);
+}
+
+function openReport(row, focus = true) {
+  const point = row ? { centre: row.slice(1, 3), label: row[0], gridId: row[0] } : reportPoint;
+  if (!point || !reportRows) return;
+  remember(true, point.gridId);
+  report.show({
+    ...point,
+    province: activeRegion,
+    provinceName: byId('region').selectedOptions[0].textContent,
+    radius: Number(byId('radius').value),
+    rows: reportRows,
+    manifest,
+  });
+  if (focus) byId('report-title').focus();
 }
 
 async function search(target, view = true) {
   if (!manifest) return;
   const id = ++requestId;
   const region = target?.region || byId('region').value;
+  report.clear();
+  byId('build-report').disabled = true;
+  reportPoint = undefined;
+  reportRows = undefined;
   byId('status').textContent = 'Loading region…';
   try {
     const rows = await records(region);
@@ -148,6 +175,13 @@ async function search(target, view = true) {
     activeRegion = region;
     byId('region').value = region;
     if (selected) byId('location').value = target.label;
+    reportRows = rows;
+    if (selected?.centre) reportPoint = selected;
+    if (selected?.id) {
+      const row = rows.find(item => item[0] === selected.id);
+      if (row) reportPoint = { centre: row.slice(1, 3), label: row[0], gridId: row[0] };
+    }
+    byId('build-report').disabled = !reportPoint;
     updateMatches(rows);
     if (map && view) {
       area.clearLayers();
@@ -286,10 +320,13 @@ function showDetail(hit) {
     link('https://ised-isde.canada.ca/site/high-speed-internet-canada/en/high-speed-internet-all-canadians/universal-broadband-fund/selected-universal-broadband-fund-projects', 'UBF projects ↗'),
     link('https://crtc.gc.ca/eng/internet/fnd/result/proj.htm', 'CRTC projects ↗'));
   if (['BC', 'NS'].includes(activeRegion)) references.append(link('https://coolcode.ca/spectrumatlas/', 'Spectrum Atlas ↗'));
+  const reportButton = el('button', 'Report from this grid centre');
+  reportButton.type = 'button';
+  reportButton.addEventListener('click', () => openReport(row));
   byId('detail').replaceChildren(heading, facts, el('h4', 'Provider technologies'),
     listed.children.length ? listed : el('p', 'No provider technologies listed for this cell.'),
     el('h4', 'Mapped project layers'),
-    projects.children.length ? projects : el('p', 'No project layers listed for this cell.'), references);
+    projects.children.length ? projects : el('p', 'No project layers listed for this cell.'), reportButton, references);
 }
 
 function exportRows() {
@@ -322,7 +359,7 @@ byId('search').addEventListener('submit', event => {
 for (const id of ['coverage', 'tech', 'fund']) {
   byId(id).addEventListener('change', () => search(selected, false));
 }
-byId('radius').addEventListener('change', () => { if (selected?.centre) search(selected); });
+byId('radius').addEventListener('change', () => { if (selected) search(selected); else report.clear(); });
 byId('region').addEventListener('change', () => {
   byId('location').value = '';
   search(null);
@@ -337,6 +374,7 @@ byId('halifax').addEventListener('click', () => search({ centre: [44.64876, -63.
 byId('prev').addEventListener('click', () => { page--; renderPage(); });
 byId('next').addEventListener('click', () => { page++; renderPage(); });
 byId('export').addEventListener('click', exportRows);
+byId('build-report').addEventListener('click', () => openReport());
 
 try {
   manifest = await read('index');
@@ -378,6 +416,10 @@ try {
     byId('location').value = params.get('q') || '';
   }
   await search(target);
+  if (params.get('report') === '1') {
+    const row = params.has('reportGrid') ? reportRows?.find(item => item[0] === params.get('reportGrid')) : undefined;
+    openReport(row, false);
+  }
 } catch (error) {
   byId('status').textContent = `Broadband data could not load (${error.message}). Open the official dataset from the source links below.`;
 }
