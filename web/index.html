@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Explore Canadian broadband availability, provider technologies, and project areas together.">
+  <title>Broadband Atlas · CoolCode</title>
+  <link rel="stylesheet" href="./leaflet.css">
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./leaflet.js"></script>
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+<header><nav aria-label="Site"><a href="https://coolcode.ca/"><strong>&gt;_</strong> CoolCode</a><a href="https://github.com/jsdyer/broadbandatlas">Source ↗</a></nav></header>
+<main>
+  <section class="intro">
+    <h1>Broadband <span>Atlas</span></h1>
+    <p>Where is high-speed internet reported, which technologies are listed, and where are new projects planned? Explore three government map layers on the same Canadian grid.</p>
+    <p id="vintage" class="small">Loading snapshot dates…</p>
+  </section>
+  <form id="search" class="panel filters" aria-label="Broadband search">
+    <fieldset id="controls" disabled>
+      <label>Province or territory<select id="region"></select></label>
+      <label>Community, coordinates or grid ID<input id="location" type="search" placeholder="Halifax or 44.65, -63.58" autocomplete="off" maxlength="100" list="places"><datalist id="places"></datalist></label>
+      <label>Search radius (km)<select id="radius"><option>15</option><option selected>35</option><option>75</option><option>150</option><option>300</option></select></label>
+      <label>Households with 50/10 Mbps<select id="coverage"><option value="">Any coverage band</option></select></label>
+      <label>Listed provider technology<select id="tech"><option value="">Any technology</option></select></label>
+      <label>Project layer<select id="fund"><option value="">Any project status</option><option value="any">Any mapped project</option><option value="none">No project listed</option></select></label>
+      <div class="actions">
+        <button type="submit" class="primary">Find coverage</button>
+        <button type="button" id="langley">Langley</button>
+        <button type="button" id="halifax">Halifax</button>
+        <button type="button" id="clear">Clear location</button>
+        <button type="button" id="export" disabled>Export filtered CSV</button>
+      </div>
+    </fieldset>
+    <p id="status" role="status">Loading Canadian broadband data…</p>
+  </form>
+  <div class="workspace">
+    <section class="panel map-panel" aria-labelledby="map-title">
+      <div class="heading"><h2 id="map-title">Coverage map</h2><label class="switch"><input id="tiles" type="checkbox" checked> Background map</label></div>
+      <div id="map" role="region" aria-label="Map of broadband coverage grid centres"></div>
+      <p id="map-info" class="small map-info"></p>
+      <ul class="legend" id="legend" aria-label="Coverage bands"></ul>
+    </section>
+    <section class="panel inspector" aria-labelledby="inspect-title">
+      <div class="heading"><h2 id="inspect-title">Grid details</h2></div>
+      <div id="detail" aria-live="polite"><p>Select a map point or a grid result to inspect reported coverage, providers, and funding.</p></div>
+    </section>
+    <section class="panel results-panel" aria-labelledby="results-title">
+      <div class="heading"><h2 id="results-title">Grid results</h2><span class="small" id="count"></span></div>
+      <div class="bars" id="profile" aria-label="Number of matching grid cells by coverage band"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Grid ID</th><th scope="col">50/10 Mbps coverage</th><th scope="col">Listed technologies</th><th scope="col">Project layers</th><th scope="col">Distance</th></tr></thead>
+          <tbody id="results"></tbody>
+        </table>
+      </div>
+      <div class="pager"><button id="prev" disabled>Previous</button><span class="small" id="page"></span><button id="next" disabled>Next</button></div>
+    </section>
+  </div>
+  <p class="notice">ISED reports estimated coverage bands for households grouped into cells of roughly 25 km². A mapped provider or project may apply to only part of a cell. Check address availability with providers and project status with the funding agency.</p>
+</main>
+<footer>
+  <a href="https://open.canada.ca/data/en/dataset/00a331db-121b-445d-b119-35dbbe3eedd9">ISED National Broadband Data</a>
+  <a href="https://open.canada.ca/data/en/dataset/4129e42c-bfa6-40f1-9b2a-19dc04136bb4">Canadian hex grid</a>
+  <a href="https://open.canada.ca/en/open-government-licence-canada">Open Government Licence – Canada</a>
+</footer>
+</body>
+</html>
