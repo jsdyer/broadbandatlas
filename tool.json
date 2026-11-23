@@ -1,0 +1,28 @@
+{
+  "id": "broadbandatlas",
+  "title": "Broadband Atlas",
+  "description": "Explore reported coverage, funding and nearby radio licences, with provincial plan prices.",
+  "category": "liminal-tools",
+  "tags": [
+    "ised",
+    "internet",
+    "speed",
+    "rural",
+    "fibre",
+    "broadband",
+    "coverage",
+    "providers",
+    "canada",
+    "funding"
+  ],
+  "icon": "network",
+  "url": "/broadbandatlas/",
+  "source": "https://github.com/jsdyer/broadbandatlas",
+  "hosting": "project",
+  "access": "browser",
+  "data_info": {
+    "mode": "snapshot",
+    "detail": "ISED maps broadband coverage and funded projects across Canada’s provinces and territories.",
+    "cadence": "Monthly"
+  }
+}

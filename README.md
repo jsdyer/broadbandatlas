@@ -1,5 +1,9 @@
 # Broadband Atlas
 
+<!-- coolcode:guide -->
+Choose a province, search a community or coordinates, and build a location report to compare coverage, nearby projects, spectrum records and provincial pricing. Grid-centre distances and area coverage estimates do not confirm service or speeds at a particular address.
+<!-- /coolcode:guide -->
+
 Broadband Atlas joins reported household coverage, provider technologies, and mapped project layers in one browser. Search by community, coordinates or hexagon ID, inspect individual cells, combine filters, and export matching records. Langley and Halifax shortcuts start a 35 km browse. All provinces and territories are available. Radius searches are scoped to the selected province or territory.
 
 ## Build and run
