@@ -29,3 +29,11 @@ Coverage bands are area estimates. Availability at an address, measured speeds, 
 Search for a community, coordinates, or grid ID and choose **Build location report**. A grid result also offers **Report from this grid centre**. The report compares the nearest or selected ISED broadband cell and nearby project layers with fixed-service and terrestrial records from Spectrum Atlas and CRTC 50/10 Mbps pricing from Telecom Pulse. Use **Print or save PDF** for a copy, or share the browser URL to reopen the report.
 
 The report labels the source dates and geographic scope of each layer. Project counts refer to grid cells. Spectrum Atlas supplies BC and NS extracts only. CRTC prices describe sampled rural and urban markets and use the latest year with both provincial and national data for a market when available. The two companion snapshots are requested from the same CoolCode site, with independent fallbacks if either source is unavailable.
+
+<!-- schedule-reliability -->
+## Schedule reliability
+
+Public GitHub repositories can have scheduled workflows disabled after 60 days of inactivity. A separate weekly [schedule guard](.github/workflows/schedule-guard.yml) calls GitHub's enable-workflow API for an explicit list of refresh workflows and itself. It can restore workflows disabled for inactivity, preserves manually disabled workflows, and runs independently of collection failures.
+
+This is an interim mitigation, not a scheduling guarantee: GitHub does not document active-workflow renewal as a permanent exemption, and scheduled runs can be delayed or dropped. A scheduler on our own Linux server is the planned independent trigger. The guard does not collect data, create dummy commits, or change source/check timestamps; successful collection and published data freshness still need monitoring.
+<!-- /schedule-reliability -->
