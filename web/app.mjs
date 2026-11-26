@@ -159,7 +159,7 @@ function openReport(row, focus = true) {
   if (focus) byId('report-title').focus();
 }
 
-async function search(target, view = true) {
+async function search(target, view = true, focusMap = false) {
   if (!manifest) return;
   const id = ++requestId;
   const region = target?.region || byId('region').value;
@@ -200,6 +200,11 @@ async function search(target, view = true) {
     }
     remember();
     queueMap();
+    if (focusMap) {
+      const heading = byId('map-title');
+      heading.focus({preventScroll: true});
+      heading.scrollIntoView({block: 'start'});
+    }
   } catch (error) {
     if (id !== requestId) return;
     byId('status').textContent = `The region could not load. Try Find coverage again (${error.message}).`;
@@ -215,6 +220,10 @@ function updateMatches(rows) {
   const scope = selected?.centre
     ? `Within ${current.radius} km of ${selected.label} in ${byId('region').selectedOptions[0].textContent}`
     : selected?.id || byId('region').selectedOptions[0].textContent;
+  const regionName = byId('region').selectedOptions[0].textContent;
+  byId('map-title').textContent = selected?.centre
+    ? `Coverage within ${current.radius} km of ${selected.label}`
+    : `Coverage map · ${selected?.id || regionName}`;
   byId('status').textContent = `${scope} · ${number.format(matches.length)} of ${number.format(rows.length)} regional cells`;
   byId('detail').replaceChildren(el('p', 'Select a map point or a grid result to inspect reported coverage, providers, and funding.'));
   focusLayer?.clearLayers();
@@ -351,7 +360,7 @@ byId('search').addEventListener('submit', event => {
   event.preventDefault();
   try {
     const value = byId('location').value.trim();
-    search(value === selected?.label ? selected : readPlace(value));
+    search(value === selected?.label ? selected : readPlace(value), true, true);
   } catch (error) {
     byId('status').textContent = error.message;
   }
@@ -369,8 +378,8 @@ byId('clear').addEventListener('click', () => {
   byId('location').value = '';
   search(null);
 });
-byId('langley').addEventListener('click', () => search({ centre: [49.10378, -122.65883], region: 'BC', label: 'Langley' }));
-byId('halifax').addEventListener('click', () => search({ centre: [44.64876, -63.60188], region: 'NS', label: 'Halifax' }));
+byId('langley').addEventListener('click', () => search({ centre: [49.10378, -122.65883], region: 'BC', label: 'Langley' }, true, true));
+byId('halifax').addEventListener('click', () => search({ centre: [44.64876, -63.60188], region: 'NS', label: 'Halifax' }, true, true));
 byId('prev').addEventListener('click', () => { page--; renderPage(); });
 byId('next').addEventListener('click', () => { page++; renderPage(); });
 byId('export').addEventListener('click', exportRows);
@@ -403,6 +412,7 @@ try {
     const field = byId(key);
     if ([...field.options].some(item => item.value === params.get(key))) field.value = params.get(key);
   }
+  byId('filter-options').open = ['coverage', 'tech', 'fund'].some(key => byId(key).value !== '');
   byId('vintage').textContent = `Coverage archive ${manifest.coverageDate} · Grid archive ${manifest.gridDate} · Snapshot built ${manifest.built}`;
   byId('controls').disabled = false;
   startMap();

@@ -16,22 +16,28 @@
 <header><nav aria-label="Site"><a href="https://coolcode.ca/"><strong>&gt;_</strong> CoolCode</a><a href="https://github.com/jsdyer/broadbandatlas">Source ↗</a></nav></header>
 <main>
   <section class="intro">
-    <h1>Broadband <span>Atlas</span></h1>
-    <p>Where is high-speed internet reported, which technologies are listed, and where are new projects planned? Explore three government map layers on the same Canadian grid.</p>
+    <h1>Canadian broadband <span>coverage</span></h1>
+    <p>Choose a community to see estimated household internet coverage, listed providers and broadband projects. Select a grid cell for its local record.</p>
     <p id="vintage" class="small">Loading snapshot dates…</p>
   </section>
   <form id="search" class="panel filters" aria-label="Broadband search">
     <fieldset id="controls" disabled>
+      <div class="actions area-examples" role="group" aria-label="Explore a community">
+        <button type="button" id="langley">Explore Langley, BC</button>
+        <button type="button" id="halifax">Explore Halifax, NS</button>
+      </div>
       <label>Province or territory<select id="region"></select></label>
       <label>Community, coordinates or grid ID<input id="location" type="search" placeholder="Halifax or 44.65, -63.58" autocomplete="off" maxlength="100" list="places"><datalist id="places"></datalist></label>
       <label>Search radius (km)<select id="radius"><option>15</option><option selected>35</option><option>75</option><option>150</option><option>300</option></select></label>
+      <details id="filter-options" class="more-filters"><summary>Filter by coverage, technology or project</summary>
+        <div class="filter-grid">
       <label>Households with 50/10 Mbps<select id="coverage"><option value="">Any coverage band</option></select></label>
       <label>Listed provider technology<select id="tech"><option value="">Any technology</option></select></label>
       <label>Project layer<select id="fund"><option value="">Any project status</option><option value="any">Any mapped project</option><option value="none">No project listed</option></select></label>
+        </div>
+      </details>
       <div class="actions">
         <button type="submit" class="primary">Find coverage</button>
-        <button type="button" id="langley">Langley</button>
-        <button type="button" id="halifax">Halifax</button>
         <button type="button" id="clear">Clear location</button>
         <button type="button" id="export" disabled>Export filtered CSV</button>
         <button type="button" id="build-report" disabled>Build location report</button>
@@ -47,8 +53,9 @@
   </section>
   <div class="workspace">
     <section class="panel map-panel" aria-labelledby="map-title">
-      <div class="heading"><h2 id="map-title">Coverage map</h2><label class="switch"><input id="tiles" type="checkbox" checked> Background map</label></div>
+      <div class="heading"><h2 id="map-title" tabindex="-1">Coverage map</h2><label class="switch"><input id="tiles" type="checkbox" checked> Background map</label></div>
       <div id="map" role="region" aria-label="Map of broadband coverage grid centres"></div>
+      <p class="map-hint">Select a map point for its coverage and providers. <a href="#location">Change community</a></p>
       <p id="map-info" class="small map-info"></p>
       <ul class="legend" id="legend" aria-label="Coverage bands"></ul>
     </section>

@@ -132,3 +132,10 @@ footer { padding: 16px 0 28px; border-top: 1px solid var(--line); display: flex;
   .location-report tr { break-inside: avoid; }
   .location-report a { color: #141414; }
 }
+
+.area-examples button { font-weight: 700; color: var(--accent); }
+.more-filters { grid-column: 1 / -1; }
+.more-filters summary { cursor: pointer; width: fit-content; }
+.filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: 13px; margin-top: 12px; }
+.map-hint { padding: 10px 14px 0; font-size: .9rem; }
+#map-title, #location { scroll-margin-top: 12px; }
